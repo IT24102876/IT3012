@@ -7,139 +7,114 @@ from agent import (
 )
 
 
-class TestPractical1And2_ReflexAgents(unittest.TestCase):
-    """
-    Tests for Practicals 1 & 2:
-        - Simple Reflex Agent
-        - Model-Based Agent
-    """
+class TestPractical1And2_ReflexAgents(
+    unittest.TestCase
+):
 
     def setUp(self):
 
-        try:
-            self.simple_agent = SimpleReflexAgent()
-            self.model_agent = ModelBasedAgent()
+        self.simple_agent = (
+            SimpleReflexAgent()
+        )
 
-        except NameError:
-
-            self.fail(
-                "Agent classes not found. "
-                "Ensure SimpleReflexAgent and "
-                "ModelBasedAgent are defined."
-            )
+        self.model_agent = (
+            ModelBasedAgent()
+        )
 
     def test_simple_reflex_logic(self):
-        """
-        Test 1:
-        Simple Reflex Agent should react purely
-        to immediate percepts.
-        """
 
-        # --------------------------------------------------
-        # Scenario A:
-        # Food is present
-        # --------------------------------------------------
-
+        # Food present
         percept_food = {
             'wall_ahead': False,
             'food_here': True
         }
 
-        action = self.simple_agent.sense_and_act(
-            percept_food
+        action = (
+            self.simple_agent.sense_and_act(
+                percept_food
+            )
         )
 
         self.assertIsNotNone(
-            action,
-            "SimpleReflexAgent returned None."
+            action
         )
 
-        # --------------------------------------------------
-        # Scenario B:
-        # Wall is ahead
-        # --------------------------------------------------
-
+        # Wall ahead
         percept_wall = {
             'wall_ahead': True,
             'food_here': False
         }
 
-        action_wall = self.simple_agent.sense_and_act(
-            percept_wall
+        action_wall = (
+            self.simple_agent.sense_and_act(
+                percept_wall
+            )
         )
 
         self.assertIn(
             action_wall,
-            ['Left', 'Right', 'Down', 'Up'],
-            "Agent did not output a valid movement action."
+            [
+                'Left',
+                'Right',
+                'Down',
+                'Up'
+            ]
         )
 
     def test_model_based_memory(self):
-        """
-        Test 2:
-        Model-Based Agent should maintain internal
-        state to escape loops.
-        """
 
         percept = {
             'wall_ahead': True,
             'food_here': False
         }
 
-        action_1 = self.model_agent.sense_and_act(
-            percept
+        action_1 = (
+            self.model_agent.sense_and_act(
+                percept
+            )
         )
 
-        action_2 = self.model_agent.sense_and_act(
-            percept
+        action_2 = (
+            self.model_agent.sense_and_act(
+                percept
+            )
         )
 
-        # The model-based agent should remember
-        # the previous action.
         self.assertNotEqual(
             action_1,
-            action_2,
-            "ModelBasedAgent returned the same action twice. "
-            "Internal memory is not working."
+            action_2
         )
 
 
-class TestPractical3_SearchAgent(unittest.TestCase):
-    """
-    Tests for Practical 3.
-
-    Tests:
-        - BFS shortest path
-        - BFS unreachable goal
-        - DFS
-        - UCS
-    """
+class TestPractical3_SearchAgent(
+    unittest.TestCase
+):
 
     def setUp(self):
 
-        try:
-            self.search_agent = SearchAgent()
+        self.search_agent = SearchAgent()
 
-        except NameError:
-
-            self.fail(
-                "SearchAgent class not found."
-            )
+    # ==================================================
+    # BFS TEST
+    # ==================================================
 
     def test_bfs_shortest_path(self):
-        """
-        Test 3:
-        BFS must find the optimal shortest path
-        in a static maze.
-        """
 
-        grid_size = (4, 4)
+        grid_size = (
+            4,
+            4
+        )
 
-        start_pos = (0, 0)
+        start_pos = (
+            0,
+            0
+        )
 
-        goal_pos = (3, 3)
+        goal_pos = (
+            3,
+            3
+        )
 
-        # U-shaped wall configuration
         walls = [
             (1, 0),
             (2, 0),
@@ -148,66 +123,63 @@ class TestPractical3_SearchAgent(unittest.TestCase):
             (2, 2)
         ]
 
-        try:
-
-            path = self.search_agent.bfs_search(
+        path = (
+            self.search_agent.bfs_search(
                 start_pos,
                 goal_pos,
                 walls,
                 grid_size
             )
-
-        except AttributeError:
-
-            self.fail(
-                "bfs_search method not implemented."
-            )
-
-        # Path must exist
-        self.assertIsNotNone(
-            path,
-            "BFS returned None. No path found."
         )
 
-        # Path must be a list
+        self.assertIsNotNone(
+            path
+        )
+
         self.assertIsInstance(
             path,
-            list,
-            "BFS should return a list."
+            list
         )
 
-        # Expected shortest path length
         self.assertEqual(
             len(path),
-            6,
-            f"BFS did not find the optimal path. "
-            f"Expected 6 steps, got {len(path)}."
+            6
         )
 
+    # ==================================================
+    # BFS UNREACHABLE TEST
+    # ==================================================
+
     def test_bfs_unreachable_goal(self):
-        """
-        Test 4:
-        BFS should correctly identify an unreachable goal.
-        """
 
-        grid_size = (3, 3)
+        grid_size = (
+            3,
+            3
+        )
 
-        start_pos = (0, 0)
+        start_pos = (
+            0,
+            0
+        )
 
-        goal_pos = (2, 2)
+        goal_pos = (
+            2,
+            2
+        )
 
-        # Block the goal
         walls = [
             (1, 2),
             (2, 1),
             (1, 1)
         ]
 
-        path = self.search_agent.bfs_search(
-            start_pos,
-            goal_pos,
-            walls,
-            grid_size
+        path = (
+            self.search_agent.bfs_search(
+                start_pos,
+                goal_pos,
+                walls,
+                grid_size
+            )
         )
 
         is_empty_or_none = (
@@ -216,21 +188,29 @@ class TestPractical3_SearchAgent(unittest.TestCase):
         )
 
         self.assertTrue(
-            is_empty_or_none,
-            "BFS should return None or [] "
-            "when the goal is unreachable."
+            is_empty_or_none
         )
+
+    # ==================================================
+    # DFS TEST
+    # ==================================================
 
     def test_dfs_search(self):
-        """
-        Test DFS can find a path to the goal.
-        """
 
-        grid_size = (4, 4)
+        grid_size = (
+            4,
+            4
+        )
 
-        start_pos = (0, 0)
+        start_pos = (
+            0,
+            0
+        )
 
-        goal_pos = (3, 3)
+        goal_pos = (
+            3,
+            3
+        )
 
         walls = [
             (1, 0),
@@ -240,38 +220,44 @@ class TestPractical3_SearchAgent(unittest.TestCase):
             (2, 2)
         ]
 
-        path = self.search_agent.dfs_search(
-            start_pos,
-            goal_pos,
-            walls,
-            grid_size
+        path = (
+            self.search_agent.dfs_search(
+                start_pos,
+                goal_pos,
+                walls,
+                grid_size
+            )
         )
 
         self.assertIsNotNone(
-            path,
-            "DFS should find a path."
+            path
         )
 
         self.assertIsInstance(
             path,
-            list,
-            "DFS should return a list."
+            list
         )
+
+    # ==================================================
+    # UCS TEST
+    # ==================================================
 
     def test_ucs_search(self):
-        """
-        Test UCS can find the lowest-cost path.
 
-        Since every movement has cost 1,
-        UCS should find the same optimal cost
-        as BFS.
-        """
+        grid_size = (
+            4,
+            4
+        )
 
-        grid_size = (4, 4)
+        start_pos = (
+            0,
+            0
+        )
 
-        start_pos = (0, 0)
-
-        goal_pos = (3, 3)
+        goal_pos = (
+            3,
+            3
+        )
 
         walls = [
             (1, 0),
@@ -281,31 +267,27 @@ class TestPractical3_SearchAgent(unittest.TestCase):
             (2, 2)
         ]
 
-        path = self.search_agent.ucs_search(
-            start_pos,
-            goal_pos,
-            walls,
-            grid_size
+        path = (
+            self.search_agent.ucs_search(
+                start_pos,
+                goal_pos,
+                walls,
+                grid_size
+            )
         )
 
         self.assertIsNotNone(
-            path,
-            "UCS should find a path."
+            path
         )
 
         self.assertIsInstance(
             path,
-            list,
-            "UCS should return a list."
+            list
         )
 
-        # With equal movement costs,
-        # UCS should find the optimal 6-step path.
         self.assertEqual(
             len(path),
-            6,
-            f"UCS should find the optimal path. "
-            f"Expected 6 steps, got {len(path)}."
+            6
         )
 
 

@@ -2,15 +2,15 @@ class GridHuntGame:
     """
     Partially Observable Grid Environment.
 
-    The agent receives local information such as:
-        - Is food here?
-        - Is there a wall ahead?
-
-    This environment is mainly used for the
-    Simple Reflex and Model-Based Agents.
+    Used for the Simple Reflex Agent
+    and Model-Based Agent.
     """
 
-    def __init__(self, width=4, height=4):
+    def __init__(
+        self,
+        width=4,
+        height=4
+    ):
 
         self.width = width
         self.height = height
@@ -35,42 +35,29 @@ class GridHuntGame:
         self.score = 0
         self.steps = 0
 
-    def get_percept(self, agent=None):
-        """
-        Return local percept information.
-
-        The original Practical 01/02 agents receive
-        only limited information.
-        """
+    def get_percept(
+        self,
+        agent=None
+    ):
 
         return {
 
-            # Food at current location
             'food_here':
                 tuple(self.agent_pos)
                 in self.food_positions,
 
-            # Is there a wall in front?
             'wall_ahead':
                 self._wall_ahead(),
 
-            # Current position is also provided so that
-            # the model-based agent can maintain memory.
             'agent_pos':
                 list(self.agent_pos)
         }
 
     def _wall_ahead(self):
-        """
-        Check whether the cell directly in front of
-        the agent contains a wall or is outside the grid.
-
-        Up is treated as forward.
-        """
 
         x, y = self.agent_pos
 
-        # At the top boundary
+        # Top boundary
         if y == self.height - 1:
             return True
 
@@ -81,7 +68,10 @@ class GridHuntGame:
 
         return next_pos in self.walls
 
-    def execute_action(self, action: str):
+    def execute_action(
+        self,
+        action: str
+    ):
 
         self.steps += 1
 
@@ -89,10 +79,7 @@ class GridHuntGame:
             self.agent_pos
         )
 
-        # --------------------------------------------------
-        # Move Up
-        # --------------------------------------------------
-
+        # Up
         if action == 'Up':
 
             new_pos[1] = min(
@@ -100,10 +87,7 @@ class GridHuntGame:
                 new_pos[1] + 1
             )
 
-        # --------------------------------------------------
-        # Move Down
-        # --------------------------------------------------
-
+        # Down
         elif action == 'Down':
 
             new_pos[1] = max(
@@ -111,10 +95,7 @@ class GridHuntGame:
                 new_pos[1] - 1
             )
 
-        # --------------------------------------------------
-        # Move Left
-        # --------------------------------------------------
-
+        # Left
         elif action == 'Left':
 
             new_pos[0] = max(
@@ -122,10 +103,7 @@ class GridHuntGame:
                 new_pos[0] - 1
             )
 
-        # --------------------------------------------------
-        # Move Right
-        # --------------------------------------------------
-
+        # Right
         elif action == 'Right':
 
             new_pos[0] = min(
@@ -133,22 +111,25 @@ class GridHuntGame:
                 new_pos[0] + 1
             )
 
+        # Stay
+        elif action == 'Stay':
+
+            pass
+
         # --------------------------------------------------
-        # Check wall collision
+        # Wall collision
         # --------------------------------------------------
 
         if tuple(new_pos) in self.walls:
 
-            # Agent cannot move through a wall
             self.score -= 5
 
         else:
 
-            # Move agent
             self.agent_pos = new_pos
 
         # --------------------------------------------------
-        # Check food
+        # Food
         # --------------------------------------------------
 
         current_position = tuple(
@@ -161,13 +142,9 @@ class GridHuntGame:
                 current_position
             )
 
-            # Reward
             self.score += 20
 
     def is_done(self):
-
-        # Game ends when all food is collected
-        # OR maximum number of steps is reached.
 
         return (
             len(self.food_positions) == 0
